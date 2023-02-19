@@ -1,7 +1,7 @@
 import type { NextPage } from "next"
 import Image from "next/image"
-import styles from "../styles/Home.module.scss"
-import { Layout } from "@/Templates/Layout"
+import { Layout } from "@/Templates/Layout/Layout"
+import styles from "styles/pages//Home.module.scss"
 
 const Home: NextPage = () => (
   <Layout>
