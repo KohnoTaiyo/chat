@@ -1,5 +1,6 @@
 import Head from "next/head"
 import { FC, ReactNode } from "react"
+import { Header } from "@/Templates/Header/Header"
 
 type LayoutProps = {
   title?: string
@@ -15,6 +16,7 @@ const Layout: FC<LayoutProps> = (props) => (
       <meta name="description" content={props.description || "課題のチャットWebアプリです"} />
       <link rel="icon" href="/favicon.ico" />
     </Head>
+    <Header />
     {props.children}
   </div>
 )
