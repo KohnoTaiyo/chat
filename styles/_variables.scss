@@ -3,6 +3,8 @@
 // color
 $primaryColor: #f3b702;
 $secondaryColor: #e2224f;
+$textBlackColor: #0f0f0f;
+$successColor: green;
 
 // font family
 $mainFont: "Dela Gothic One", cursive, sans-serif;
@@ -11,3 +13,7 @@ $mainFont: "Dela Gothic One", cursive, sans-serif;
 $textSizeSmall: 1rem;
 $textSizeMedium: 1.6rem;
 $textSizeLarge: 3.2rem;
+
+// shadow
+$shadowOut: 0 0 1.6rem -0.6rem rgba(#000000, 0.8);
+$shadowIn: 0 0 0.6rem 0.1rem inset rgba(#000000, 0.4);

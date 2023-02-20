@@ -17,6 +17,7 @@
     "baseUrl": "./",
     "paths": {
       "@/*": ["./src/*"],
+      "@styles/*": ["./styles//*"],
       "@variables": ["./styles/_variables.scss"]
     }
   },

@@ -13,4 +13,41 @@
     font-family: $mainFont;
     line-height: 1em;
   }
+
+  &__info {
+    position: relative;
+    cursor: pointer;
+
+    &Modal {
+      position: absolute;
+      top: 5.2rem;
+      right: 0;
+      background-color: #fff;
+      color: $textBlackColor;
+      box-shadow: $shadowOut;
+      font-size: $textSizeMedium;
+      padding: 0.8rem;
+      border-radius: 0.8rem;
+      min-width: 8rem;
+      text-align: center;
+
+      &::before {
+        content: "";
+        position: absolute;
+        right: 0.4rem;
+        top: -1.6rem;
+        clip-path: polygon(50% 30%, 0% 100%, 100% 100%);
+        background-color: #fff;
+        width: 2rem;
+        height: 2rem;
+        z-index: 1;
+      }
+
+      p:nth-child(2) {
+        margin-top: 0.8rem;
+        padding-top: 0.8rem;
+        border-top: 1px solid rgba($textBlackColor, 0.2);
+      }
+    }
+  }
 }

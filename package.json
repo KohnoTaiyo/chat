@@ -7,9 +7,13 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "format": "prettier --write './**/*.{js,jsx,ts,tsx,json}'"
+    "format-src": "prettier --write './src/**/*.{js,jsx,ts,tsx,json}'",
+    "format-page": "prettier --write './pages/**/*.{js,jsx,ts,tsx,json}'",
+    "format-styles": "prettier --write './styles/**/*.{css, scss}'",
+    "format-lib": "prettier --write './lib/**/*.{js,jsx,ts,tsx,json}'"
   },
   "dependencies": {
+    "classnames": "^2.3.2",
     "firebase": "^9.17.1",
     "next": "13.1.6",
     "react": "18.2.0",
