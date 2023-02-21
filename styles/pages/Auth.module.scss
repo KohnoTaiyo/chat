@@ -1,65 +1,20 @@
 @import "@variables";
 
-.dialog {
+.signButton {
   position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: calc(100% - 3.2rem);
-  max-width: 40rem;
-  background-color: $primaryColor;
-  border: none;
-  border-radius: 0.8rem;
-  text-align: center;
-  color: #fff;
+  top: calc(50% - 10rem);
+  left: calc(50% - 10rem);
+  font-size: $textSizeLarge;
+  background-color: #fff;
   box-shadow: $shadowOut;
-  padding: 0.8rem 1.6rem 1.6rem;
+  border-radius: 50%;
+  font-family: $mainFont;
+  width: 20rem;
+  height: 20rem;
+  color: $primaryColor;
+  transition: 0.3s;
 
-  &__title {
-    margin-bottom: 2rem;
-    font-size: $textSizeLarge;
-    font-family: $mainFont;
-  }
-
-  &__name {
-    box-shadow: $shadowIn;
-    width: 100%;
-    padding: 0.8rem;
-    line-height: 1em;
-    color: #fff;
-    border-radius: 0.8rem;
-    font-size: $textSizeMedium;
-    margin-bottom: 2rem;
-    font-family: $mainFont;
-
-    &[data-error] {
-      border: 2px solid $secondaryColor;
-    }
-
-    &:focus {
-      outline: none;
-    }
-  }
-
-  &__submit {
-    font-size: $textSizeMedium;
-    color: $primaryColor;
-    background-color: #fff;
-    width: 100%;
-    padding: 0.8rem;
-    border-radius: 0.8rem;
-    transition: box-shadow 0.2s;
-    font-family: $mainFont;
-
-    &:hover {
-      box-shadow: $shadowOut;
-    }
-  }
-
-  &__error {
-    text-align: left;
-    color: $secondaryColor;
-    font-size: $textSizeMedium;
-    font-weight: bold;
+  &:hover {
+    transform: scale(1.1);
   }
 }

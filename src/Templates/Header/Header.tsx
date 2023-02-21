@@ -1,16 +1,23 @@
 import { getAuth, signOut } from "firebase/auth"
 import Image from "next/image"
 import Link from "next/link"
+import { useRouter } from "next/router"
 import { FC, useState, useRef, useEffect } from "react"
 import styles from "./Header.module.scss"
 import { Toast } from "@/Components/Toast/Toast"
 import { useAuthContext } from "lib/auth/AuthProvider"
 
-const Header: FC = () => {
+type HeaderProps = {
+  historyBack?: boolean
+  title?: string
+}
+
+const Header: FC<HeaderProps> = (props) => {
   const { user } = useAuthContext()
   const [signOutError, setSignOutError] = useState<boolean>(false)
   const [isModalOpen, setModalOpen] = useState<boolean>(false)
   const handleClick = () => setModalOpen(!isModalOpen)
+  const { back } = useRouter()
 
   const signOutHandler = async () => {
     try {
@@ -51,23 +58,23 @@ const Header: FC = () => {
       />
 
       <header className={styles.header}>
-        <Link href="/">
-          <p className={styles.header__logo}>G Chat!</p>
-        </Link>
+        {props.historyBack ? (
+          <p className={styles.header__logo} onClick={() => back()}>
+            ＜
+          </p>
+        ) : (
+          <Link href="/">
+            <p className={styles.header__logo}>G Chat!</p>
+          </Link>
+        )}
+        {props.title && <p className={styles.header__title}>{props.title}</p>}
         <div className={styles.header__info}>
           <div onClick={handleClick} ref={logoRef}>
             <Image src="/member.svg" alt="" width={40} height={40} />
           </div>
           {isModalOpen && (
             <div className={styles.header__infoModal} ref={modalRef}>
-              {user ? (
-                <>
-                  <p onClick={signOutHandler}>Sign out</p>
-                  <p>Info edit</p>
-                </>
-              ) : (
-                <p>Hello!</p>
-              )}
+              {user ? <p onClick={signOutHandler}>Sign out</p> : <p>Hello!</p>}
             </div>
           )}
         </div>

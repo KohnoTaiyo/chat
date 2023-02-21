@@ -1,0 +1,45 @@
+@import "@variables";
+
+.dialog {
+  &__message {
+    text-align: center;
+    color: #fff;
+    font-weight: bold;
+    margin-bottom: 1.6rem;
+  }
+}
+
+.send {
+  position: fixed;
+  z-index: 1;
+  left: 0;
+  bottom: 0;
+  background-color: #fff;
+  width: 100%;
+  padding: 1.6rem;
+  display: flex;
+  justify-content: space-between;
+  font-size: $textSizeMedium;
+  border-radius: 0.8rem 0.8rem 0 0;
+  box-shadow: $shadowOut;
+
+  input {
+    background-color: $primaryColor;
+    padding: 0.8rem;
+    flex: 1;
+    color: #fff;
+    border-radius: 0.4rem;
+    box-shadow: $shadowIn;
+  }
+
+  button {
+    width: 10%;
+    min-width: 8rem;
+    margin-left: 1.6rem;
+    background-color: $primaryColor;
+    font-family: $mainFont;
+    color: #fff;
+    border-radius: 0.4rem;
+    box-shadow: $shadowOut;
+  }
+}

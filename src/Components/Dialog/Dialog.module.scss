@@ -1,0 +1,28 @@
+@import "@variables";
+
+.dialog {
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: $textSizeMedium;
+  padding: 1.6rem;
+  background-color: $primaryColor;
+  box-sizing: $shadowOut;
+  border: none;
+  width: 24rem;
+  border-radius: 0.8rem;
+
+  &__action {
+    display: flex;
+    justify-content: space-between;
+
+    button {
+      width: 10rem;
+      color: $primaryColor;
+      border-radius: 0.4rem;
+      padding: 0.4rem;
+      background-color: #fff;
+      font-family: $mainFont;
+    }
+  }
+}

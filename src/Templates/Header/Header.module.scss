@@ -4,19 +4,31 @@
   padding: 1.6rem;
   display: flex;
   justify-content: space-between;
+  align-items: center;
   position: sticky;
   top: 0;
   left: 0;
+  font-size: 4rem;
+  font-family: $mainFont;
 
   &__logo {
-    font-size: 4rem;
-    font-family: $mainFont;
     line-height: 1em;
+    cursor: pointer;
+    text-shadow: rgba(#000, 0.5) 0 0 1.2rem;
+  }
+
+  &__title {
+    line-height: 1em;
+    text-shadow: rgba(#000, 0.5) 0 0 1.2rem;
   }
 
   &__info {
     position: relative;
     cursor: pointer;
+
+    img {
+      filter: drop-shadow(0 0 0.4rem rgba(#000, 0.5));
+    }
 
     &Modal {
       position: absolute;
@@ -28,7 +40,7 @@
       font-size: $textSizeMedium;
       padding: 0.8rem;
       border-radius: 0.8rem;
-      min-width: 8rem;
+      min-width: 12rem;
       text-align: center;
 
       &::before {
@@ -41,12 +53,6 @@
         width: 2rem;
         height: 2rem;
         z-index: 1;
-      }
-
-      p:nth-child(2) {
-        margin-top: 0.8rem;
-        padding-top: 0.8rem;
-        border-top: 1px solid rgba($textBlackColor, 0.2);
       }
     }
   }

@@ -1,66 +1,91 @@
-import styles from "@styles/pages/Home.module.scss"
+import {
+  collection,
+  getDocs,
+  getFirestore,
+  query,
+  limit,
+  orderBy,
+  serverTimestamp,
+} from "firebase/firestore"
 import type { NextPage } from "next"
-import Image from "next/image"
+import Link from "next/link"
+import { useRouter } from "next/router"
+import { useEffect, useRef, useState } from "react"
+import { Dialog } from "@/Components/Dialog/Dialog"
+import { InputText } from "@/Components/InputText/InputText"
 import { Layout } from "@/Templates/Layout/Layout"
+import styles from "@styles/pages/Home.module.scss"
+import { updateDocFunc } from "hooks/useUpdateDoc"
 import { AuthGuard } from "lib/auth/AuthGuard"
+import type { Room } from "types"
 
-const Home: NextPage = () => (
-  <AuthGuard>
-    <Layout>
-      <div className={styles.container}>
-        <main className={styles.main}>
-          <h1 className={styles.title}>
-            Welcome to <a href="https://nextjs.org">Next.js!</a>
-          </h1>
+const MAX_ROOM_NAME_LENGTH = 10
 
-          <p className={styles.description}>
-            Get started by editing <code className={styles.code}>pages/index.tsx</code>
+const Home: NextPage = () => {
+  const [rooms, setRooms] = useState<Room[]>([])
+  const [roomName, setRoomName] = useState<string>("")
+  const { push } = useRouter()
+  const db = getFirestore()
+
+  const dialogRef = useRef<HTMLDialogElement>(null)
+  const openModal = () => dialogRef.current?.showModal()
+  const closeModal = () => dialogRef.current?.close()
+
+  const cancelAction = () => {
+    setRoomName("")
+    closeModal()
+  }
+
+  const addRoom = () => {
+    if (roomName && roomName.length <= MAX_ROOM_NAME_LENGTH) {
+      updateDocFunc({ title: roomName, updatedAt: serverTimestamp() }, "rooms", roomName)
+      push(`/${roomName}`)
+    }
+  }
+
+  useEffect(() => {
+    const docFetch = async () => {
+      const roomDocs = await getDocs(
+        query(collection(db, "rooms"), limit(20), orderBy("updatedAt", "desc")),
+      )
+      const data: Room[] = []
+      roomDocs.forEach((room) => {
+        data.push(room.data() as Room)
+      })
+      setRooms(data)
+    }
+    docFetch()
+  }, [])
+
+  return (
+    <AuthGuard>
+      <Layout>
+        <Dialog ref={dialogRef} doFunc={addRoom} cancelFunc={cancelAction}>
+          <InputText
+            value={roomName}
+            onChage={setRoomName}
+            placeholder="New room name"
+            maxLength={10}
+            require
+          />
+        </Dialog>
+        {!!rooms.length ? (
+          <ul className={styles.room}>
+            {rooms.map((room, index) => (
+              <Link href={`/${room.title}`} key={index}>
+                <li>{`${room.title}の部屋`}</li>
+              </Link>
+            ))}
+          </ul>
+        ) : (
+          <p className={styles.noRoomText}>
+            部屋がありません。右下のボタンから新しい部屋の作成をお願いします！
           </p>
-
-          <div className={styles.grid}>
-            <a href="https://nextjs.org/docs" className={styles.card}>
-              <h2>Documentation &rarr;</h2>
-              <p>Find in-depth information about Next.js features and API.</p>
-            </a>
-
-            <a href="https://nextjs.org/learn" className={styles.card}>
-              <h2>Learn &rarr;</h2>
-              <p>Learn about Next.js in an interactive course with quizzes!</p>
-            </a>
-
-            <a
-              href="https://github.com/vercel/next.js/tree/canary/examples"
-              className={styles.card}
-            >
-              <h2>Examples &rarr;</h2>
-              <p>Discover and deploy boilerplate example Next.js projects.</p>
-            </a>
-
-            <a
-              href="https://vercel.com/new?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-              className={styles.card}
-            >
-              <h2>Deploy &rarr;</h2>
-              <p>Instantly deploy your Next.js site to a public URL with Vercel.</p>
-            </a>
-          </div>
-        </main>
-
-        <footer className={styles.footer}>
-          <a
-            href="https://vercel.com?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Powered by{" "}
-            <span className={styles.logo}>
-              <Image src="/vercel.svg" alt="Vercel Logo" width={72} height={16} />
-            </span>
-          </a>
-        </footer>
-      </div>
-    </Layout>
-  </AuthGuard>
-)
+        )}
+        <button className={styles.add} onClick={openModal} />
+      </Layout>
+    </AuthGuard>
+  )
+}
 
 export default Home

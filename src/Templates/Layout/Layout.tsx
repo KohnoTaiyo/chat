@@ -3,20 +3,22 @@ import { FC, ReactNode } from "react"
 import { Header } from "@/Templates/Header/Header"
 
 type LayoutProps = {
-  title?: string
+  tabTitle?: string
   description?: string
   children: ReactNode
   addClassNames?: string
+  historyBack?: boolean
+  pageTitle?: string
 }
 
 const Layout: FC<LayoutProps> = (props) => (
   <div className={props.addClassNames}>
     <Head>
-      <title>{props.title || "チャットWebアプリ"}</title>
+      <title>{props.tabTitle || "チャットWebアプリ"}</title>
       <meta name="description" content={props.description || "課題のチャットWebアプリです"} />
       <link rel="icon" href="/favicon.ico" />
     </Head>
-    <Header />
+    <Header historyBack={props.historyBack} title={props.pageTitle} />
     {props.children}
   </div>
 )
