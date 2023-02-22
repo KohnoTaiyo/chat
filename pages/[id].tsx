@@ -1,5 +1,7 @@
+import { serverTimestamp } from "firebase/firestore"
 import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage"
 import type { GetServerSideProps, NextPage } from "next"
+import Image from "next/image"
 import { ChangeEvent, FormEvent, useEffect, useRef, useState } from "react"
 import { Button } from "@/Components/Button/Button"
 import { Dialog } from "@/Components/Dialog/Dialog"
@@ -7,11 +9,11 @@ import { InputText } from "@/Components/InputText/InputText"
 import { Toast } from "@/Components/Toast/Toast"
 import { Layout } from "@/Templates/Layout/Layout"
 import styles from "@styles/pages/Chat.module.scss"
-import { getDocById } from "hooks/useGetDocById"
-import { updateDocFunc, updateRoomSubDocFunc } from "hooks/useUpdateDoc"
+import { getDocById, getTextsHistory, getTextsRealTime } from "hooks/getDocById"
+import { updateDocFunc, updateRoomSubDocFunc } from "hooks/updateDoc"
 import { AuthGuard } from "lib/auth/AuthGuard"
 import { useAuthContext } from "lib/auth/AuthProvider"
-import type { LoginUser, Room } from "types"
+import type { LoginUser, Room, Text } from "types"
 
 type PageProps = {
   data: Room
@@ -29,9 +31,11 @@ const Chat: NextPage<PageProps> = (props) => {
   const [message, setMessage] = useState<string>("")
   const [userImage, setUserImage] = useState<File>()
   const [dialogDoText, setDialogDoText] = useState<string>("OK")
+  const [texts, setTexts] = useState<Text[] | undefined>()
   const [registrationSuccess, setRegistrationSuccess] = useState<boolean>(false)
   const [registrationError, setRegistrationError] = useState<boolean>(false)
   const [fileValidation, setFileValidation] = useState<boolean>(false)
+  const scrollElement = useRef<HTMLUListElement>(null)
 
   const dialogRef = useRef<HTMLDialogElement>(null)
   const openModal = () => dialogRef.current?.showModal()
@@ -58,7 +62,7 @@ const Chat: NextPage<PageProps> = (props) => {
         setTimeout(() => {
           setRegistrationSuccess(true)
           closeModal()
-        }, 1000)
+        }, 2000)
       } catch (e) {
         console.log(e)
         setRegistrationError(true)
@@ -80,12 +84,14 @@ const Chat: NextPage<PageProps> = (props) => {
 
   const onSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault()
-    if (userData && props.data.id) {
+    if (userData && props.data.id && user?.uid) {
       updateRoomSubDocFunc(
         {
           text: message,
           name: userData.name,
           image: userData.image,
+          createdAt: serverTimestamp(),
+          userId: user.uid,
         },
         props.data.id,
       )
@@ -102,6 +108,20 @@ const Chat: NextPage<PageProps> = (props) => {
     }
     fetch()
   }, [registrationSuccess, user?.uid])
+
+  // const [a, aa] = useState<any>()
+  // console.log(a)
+  useEffect(() => {
+    const fetch = async () => {
+      if (!props.data.id) return
+      const historyText = (await getTextsHistory(props.data.id)) as Text[] | undefined
+      setTexts(historyText)
+    }
+    fetch()
+    scrollElement.current?.scrollTo(5000, 5000)
+    // const g = getTextsRealTime(props.data.id)
+    // aa(g)
+  }, [])
 
   return (
     <AuthGuard>
@@ -137,7 +157,29 @@ const Chat: NextPage<PageProps> = (props) => {
           <input type="file" accept="image/png, image/jpeg" onChange={uploadFile} />
         </label>
       </Dialog>
+
       <Layout historyBack pageTitle={props.data.title} reImageFetch={registrationSuccess}>
+        {texts && (
+          <ul className={styles.message} ref={scrollElement}>
+            {texts.map((text, index) =>
+              text.userId === user?.uid ? (
+                <div className={styles.message__item} data-left key={index}>
+                  <li>{text.text}</li>
+                </div>
+              ) : (
+                <li className={styles.message__item} key={index}>
+                  <div className={styles.message__itemImage}>
+                    <Image src={text.image} alt="" fill style={{ objectFit: "cover" }} />
+                  </div>
+                  <div className={styles.message__itemContents}>
+                    <p className={styles.message__itemName}>{text.name}</p>
+                    <p className={styles.message__itemText}>{text.text}</p>
+                  </div>
+                </li>
+              ),
+            )}
+          </ul>
+        )}
         <form className={styles.send} onSubmit={onSubmit}>
           <InputText
             addClassNames={styles.send__input}

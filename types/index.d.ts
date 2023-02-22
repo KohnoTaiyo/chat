@@ -8,3 +8,11 @@ export type Room = {
   title: string
   updatedAt: Date
 }
+
+export type Text = {
+  createdAt: Date
+  image: string
+  name: string
+  text: string
+  userId: string
+}

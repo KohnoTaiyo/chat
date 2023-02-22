@@ -1,5 +1,16 @@
 @import "@variables";
 
+%triangle {
+  content: "";
+  width: 0.8rem;
+  height: 0.8rem;
+  position: absolute;
+  background-color: #fff;
+  top: 0.4rem;
+  right: -0.8rem;
+  clip-path: polygon(100% 0, 0 21%, 0 100%);
+}
+
 .dialog {
   &__message {
     text-align: center;
@@ -32,7 +43,7 @@
 }
 
 .send {
-  position: fixed;
+  position: sticky;
   z-index: 1;
   left: 0;
   bottom: 0;
@@ -52,5 +63,75 @@
 
   &__button {
     margin-left: 1.6rem;
+  }
+}
+
+.message {
+  padding: 0 1.6rem;
+  font-size: $textSizeMedium;
+  font-weight: bold;
+  color: $primaryColor;
+  display: inline-flex;
+  flex-direction: column;
+  align-items: flex-start;
+  width: 100%;
+
+  &__item {
+    margin-bottom: 1.6rem;
+    display: flex;
+    width: 100%;
+
+    &[data-left] {
+      justify-content: flex-end;
+
+      li {
+        background-color: #fff;
+        padding: 0.8rem;
+        max-width: 80%;
+        box-shadow: $shadowOut;
+        border-radius: 0.8rem;
+        margin-right: 0.8rem;
+        position: relative;
+
+        &::before {
+          @extend %triangle;
+        }
+      }
+    }
+
+    &Image {
+      width: 3.6rem;
+      height: 3.6rem;
+      position: relative;
+      border-radius: 50%;
+      overflow: hidden;
+      margin-right: 1.6rem;
+    }
+
+    &Contents {
+      max-width: 80%;
+    }
+
+    &Name {
+      color: #fff;
+      line-height: 1;
+    }
+
+    &Text {
+      color: $primaryColor;
+      padding: 0.8rem;
+      display: block;
+      background-color: #fff;
+      box-shadow: $shadowOut;
+      border-radius: 0.8rem;
+      position: relative;
+      margin-top: 0.4rem;
+
+      &::before {
+        @extend %triangle;
+        clip-path: polygon(100% 20%, 0 0, 100% 100%);
+        left: -0.8rem;
+      }
+    }
   }
 }

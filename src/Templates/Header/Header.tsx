@@ -5,7 +5,7 @@ import { useRouter } from "next/router"
 import { FC, useState, useRef, useEffect } from "react"
 import styles from "./Header.module.scss"
 import { Toast } from "@/Components/Toast/Toast"
-import { getDocById } from "hooks/useGetDocById"
+import { getDocById } from "hooks/getDocById"
 import { useAuthContext } from "lib/auth/AuthProvider"
 import { LoginUser } from "types"
 
