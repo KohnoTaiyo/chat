@@ -1,4 +1,12 @@
-import { serverTimestamp } from "firebase/firestore"
+import {
+  collection,
+  getFirestore,
+  limit,
+  onSnapshot,
+  orderBy,
+  query,
+  serverTimestamp,
+} from "firebase/firestore"
 import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage"
 import type { GetServerSideProps, NextPage } from "next"
 import Image from "next/image"
@@ -9,7 +17,7 @@ import { InputText } from "@/Components/InputText/InputText"
 import { Toast } from "@/Components/Toast/Toast"
 import { Layout } from "@/Templates/Layout/Layout"
 import styles from "@styles/pages/Chat.module.scss"
-import { getDocById, getTextsHistory, getTextsRealTime } from "hooks/getDocById"
+import { getDocById } from "hooks/getDocById"
 import { updateDocFunc, updateRoomSubDocFunc } from "hooks/updateDoc"
 import { AuthGuard } from "lib/auth/AuthGuard"
 import { useAuthContext } from "lib/auth/AuthProvider"
@@ -31,11 +39,11 @@ const Chat: NextPage<PageProps> = (props) => {
   const [message, setMessage] = useState<string>("")
   const [userImage, setUserImage] = useState<File>()
   const [dialogDoText, setDialogDoText] = useState<string>("OK")
-  const [texts, setTexts] = useState<Text[] | undefined>()
+  const [texts, setTexts] = useState<Text[]>()
   const [registrationSuccess, setRegistrationSuccess] = useState<boolean>(false)
   const [registrationError, setRegistrationError] = useState<boolean>(false)
   const [fileValidation, setFileValidation] = useState<boolean>(false)
-  const scrollElement = useRef<HTMLUListElement>(null)
+  const messageListElm = useRef<HTMLUListElement>(null)
 
   const dialogRef = useRef<HTMLDialogElement>(null)
   const openModal = () => dialogRef.current?.showModal()
@@ -95,9 +103,15 @@ const Chat: NextPage<PageProps> = (props) => {
         },
         props.data.id,
       )
+      setMessage("")
     } else {
       openModal()
     }
+  }
+
+  const scrollToBottom = () => {
+    const scrollPosition = messageListElm.current?.scrollHeight
+    window.scrollTo(0, scrollPosition || 0)
   }
 
   useEffect(() => {
@@ -109,18 +123,22 @@ const Chat: NextPage<PageProps> = (props) => {
     fetch()
   }, [registrationSuccess, user?.uid])
 
-  // const [a, aa] = useState<any>()
-  // console.log(a)
   useEffect(() => {
-    const fetch = async () => {
-      if (!props.data.id) return
-      const historyText = (await getTextsHistory(props.data.id)) as Text[] | undefined
-      setTexts(historyText)
-    }
-    fetch()
-    scrollElement.current?.scrollTo(5000, 5000)
-    // const g = getTextsRealTime(props.data.id)
-    // aa(g)
+    const db = getFirestore()
+    if (!props.data.id) return
+    const unsubscribe = onSnapshot(
+      query(collection(db, "rooms", props.data.id, "text"), limit(50), orderBy("createdAt", "asc")),
+      (snapshot) => {
+        setTexts(snapshot.docs.map((doc) => doc.data() as Text))
+        scrollToBottom()
+      },
+    )
+
+    // メッセージの表示を待って発火
+    setTimeout(() => {
+      scrollToBottom()
+    }, 300)
+    return () => unsubscribe()
   }, [])
 
   return (
@@ -160,7 +178,7 @@ const Chat: NextPage<PageProps> = (props) => {
 
       <Layout historyBack pageTitle={props.data.title} reImageFetch={registrationSuccess}>
         {texts && (
-          <ul className={styles.message} ref={scrollElement}>
+          <ul className={styles.message} ref={messageListElm}>
             {texts.map((text, index) =>
               text.userId === user?.uid ? (
                 <div className={styles.message__item} data-left key={index}>

@@ -43,7 +43,7 @@
 }
 
 .send {
-  position: sticky;
+  position: fixed;
   z-index: 1;
   left: 0;
   bottom: 0;
@@ -67,7 +67,7 @@
 }
 
 .message {
-  padding: 0 1.6rem;
+  padding: 0 1.6rem 7.2rem;
   font-size: $textSizeMedium;
   font-weight: bold;
   color: $primaryColor;
@@ -92,6 +92,11 @@
         border-radius: 0.8rem;
         margin-right: 0.8rem;
         position: relative;
+        overflow-wrap: break-word;
+
+        @include sp {
+          max-width: 70%;
+        }
 
         &::before {
           @extend %triangle;
@@ -110,6 +115,10 @@
 
     &Contents {
       max-width: 80%;
+
+      @include sp {
+        max-width: 60%;
+      }
     }
 
     &Name {

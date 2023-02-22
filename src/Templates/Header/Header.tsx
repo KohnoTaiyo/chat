@@ -73,7 +73,7 @@ const Header: FC<HeaderProps> = (props) => {
       <header className={styles.header}>
         {props.historyBack ? (
           <p className={styles.header__logo} onClick={() => back()}>
-            ＜
+            <span className={styles.header__logoArrow}>＜</span>
           </p>
         ) : (
           <Link href="/">

@@ -16,3 +16,10 @@ $textSizeLarge: 3.2rem;
 // shadow
 $shadowOut: 0 0 1.6rem -0.6rem rgba(#000000, 0.8);
 $shadowIn: 0 0 0.6rem 0.1rem inset rgba(#000000, 0.4);
+
+// breakpoint
+@mixin sp {
+  @media (max-width: (480px)) {
+    @content;
+  }
+}
