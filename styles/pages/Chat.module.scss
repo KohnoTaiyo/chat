@@ -7,6 +7,28 @@
     font-weight: bold;
     margin-bottom: 1.6rem;
   }
+
+  &__caution {
+    color: $secondaryColor;
+    margin-bottom: 0.8rem;
+  }
+
+  &__file {
+    background-color: #fff;
+    border-radius: 0.4rem;
+    color: $primaryColor;
+    margin-bottom: 1.6rem;
+    display: block;
+    padding: 0.8rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    cursor: pointer;
+
+    input[type="file"] {
+      display: none;
+    }
+  }
 }
 
 .send {
@@ -23,23 +45,12 @@
   border-radius: 0.8rem 0.8rem 0 0;
   box-shadow: $shadowOut;
 
-  input {
-    background-color: $primaryColor;
-    padding: 0.8rem;
-    flex: 1;
-    color: #fff;
-    border-radius: 0.4rem;
-    box-shadow: $shadowIn;
+  &__input {
+    margin-bottom: 0;
+    background-color: $primaryDarkColor;
   }
 
-  button {
-    width: 10%;
-    min-width: 8rem;
+  &__button {
     margin-left: 1.6rem;
-    background-color: $primaryColor;
-    font-family: $mainFont;
-    color: #fff;
-    border-radius: 0.4rem;
-    box-shadow: $shadowOut;
   }
 }

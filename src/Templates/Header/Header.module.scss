@@ -26,8 +26,13 @@
     position: relative;
     cursor: pointer;
 
-    img {
-      filter: drop-shadow(0 0 0.4rem rgba(#000, 0.5));
+    &Image {
+      width: 4rem;
+      height: 4rem;
+      position: relative;
+      border-radius: 50%;
+      overflow: hidden;
+      box-shadow: $shadowOut;
     }
 
     &Modal {
@@ -35,13 +40,13 @@
       top: 5.2rem;
       right: 0;
       background-color: #fff;
-      color: $textBlackColor;
       box-shadow: $shadowOut;
       font-size: $textSizeMedium;
       padding: 0.8rem;
       border-radius: 0.8rem;
       min-width: 12rem;
       text-align: center;
+      color: $primaryColor;
 
       &::before {
         content: "";

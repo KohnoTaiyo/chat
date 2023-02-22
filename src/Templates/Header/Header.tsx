@@ -5,15 +5,19 @@ import { useRouter } from "next/router"
 import { FC, useState, useRef, useEffect } from "react"
 import styles from "./Header.module.scss"
 import { Toast } from "@/Components/Toast/Toast"
+import { getDocById } from "hooks/useGetDocById"
 import { useAuthContext } from "lib/auth/AuthProvider"
+import { LoginUser } from "types"
 
 type HeaderProps = {
   historyBack?: boolean
   title?: string
+  reImageFetch?: boolean
 }
 
 const Header: FC<HeaderProps> = (props) => {
   const { user } = useAuthContext()
+  const [userData, setUserData] = useState<LoginUser>()
   const [signOutError, setSignOutError] = useState<boolean>(false)
   const [isModalOpen, setModalOpen] = useState<boolean>(false)
   const handleClick = () => setModalOpen(!isModalOpen)
@@ -50,6 +54,15 @@ const Header: FC<HeaderProps> = (props) => {
     return () => document.removeEventListener("click", closeModal)
   }, [])
 
+  useEffect(() => {
+    if (!user?.uid) return
+    const fetch = async () => {
+      const data = await getDocById("users", user.uid)
+      setUserData(data as LoginUser)
+    }
+    fetch()
+  }, [props.reImageFetch, user?.uid])
+
   return (
     <>
       <Toast
@@ -69,8 +82,13 @@ const Header: FC<HeaderProps> = (props) => {
         )}
         {props.title && <p className={styles.header__title}>{props.title}</p>}
         <div className={styles.header__info}>
-          <div onClick={handleClick} ref={logoRef}>
-            <Image src="/member.svg" alt="" width={40} height={40} />
+          <div onClick={handleClick} ref={logoRef} className={styles.header__infoImage}>
+            <Image
+              src={userData?.image || "/member.svg"}
+              alt=""
+              fill
+              style={{ objectFit: "cover" }}
+            />
           </div>
           {isModalOpen && (
             <div className={styles.header__infoModal} ref={modalRef}>

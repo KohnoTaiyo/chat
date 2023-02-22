@@ -11,7 +11,21 @@ export const AuthGuard = ({ children }: Props) => {
   const { push } = useRouter()
 
   if (typeof user === "undefined") {
-    return <>読み込み中...</>
+    return (
+      <p
+        style={{
+          position: "absolute",
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          margin: "auto",
+          fontSize: "3.2rem",
+        }}
+      >
+        読み込み中...
+      </p>
+    )
   }
 
   if (user === null) {

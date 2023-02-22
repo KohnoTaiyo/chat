@@ -15,14 +15,5 @@
   &__action {
     display: flex;
     justify-content: space-between;
-
-    button {
-      width: 10rem;
-      color: $primaryColor;
-      border-radius: 0.4rem;
-      padding: 0.4rem;
-      background-color: #fff;
-      font-family: $mainFont;
-    }
   }
 }

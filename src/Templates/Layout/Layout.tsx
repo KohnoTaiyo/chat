@@ -9,6 +9,7 @@ type LayoutProps = {
   addClassNames?: string
   historyBack?: boolean
   pageTitle?: string
+  reImageFetch?: boolean
 }
 
 const Layout: FC<LayoutProps> = (props) => (
@@ -18,7 +19,11 @@ const Layout: FC<LayoutProps> = (props) => (
       <meta name="description" content={props.description || "課題のチャットWebアプリです"} />
       <link rel="icon" href="/favicon.ico" />
     </Head>
-    <Header historyBack={props.historyBack} title={props.pageTitle} />
+    <Header
+      historyBack={props.historyBack}
+      title={props.pageTitle}
+      reImageFetch={props.reImageFetch}
+    />
     {props.children}
   </div>
 )

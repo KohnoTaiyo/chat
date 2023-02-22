@@ -1,19 +1,21 @@
+import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage"
 import type { GetServerSideProps, NextPage } from "next"
-import { FormEvent, useRef, useState } from "react"
+import { ChangeEvent, FormEvent, useEffect, useRef, useState } from "react"
+import { Button } from "@/Components/Button/Button"
 import { Dialog } from "@/Components/Dialog/Dialog"
 import { InputText } from "@/Components/InputText/InputText"
+import { Toast } from "@/Components/Toast/Toast"
 import { Layout } from "@/Templates/Layout/Layout"
 import styles from "@styles/pages/Chat.module.scss"
-import { useGetDocById } from "hooks/useGetDocById"
-import { updateDocFunc } from "hooks/useUpdateDoc"
+import { getDocById } from "hooks/useGetDocById"
+import { updateDocFunc, updateRoomSubDocFunc } from "hooks/useUpdateDoc"
 import { AuthGuard } from "lib/auth/AuthGuard"
 import { useAuthContext } from "lib/auth/AuthProvider"
-import type { LoginUser } from "types"
+import type { LoginUser, Room } from "types"
 
 type PageProps = {
-  title: string
+  data: Room
 }
-
 type PathParams = {
   id: string
 }
@@ -24,6 +26,12 @@ const Chat: NextPage<PageProps> = (props) => {
   const { user } = useAuthContext()
   const [userData, setUserData] = useState<LoginUser | undefined>()
   const [userName, setUserName] = useState<string>("")
+  const [message, setMessage] = useState<string>("")
+  const [userImage, setUserImage] = useState<File>()
+  const [dialogDoText, setDialogDoText] = useState<string>("OK")
+  const [registrationSuccess, setRegistrationSuccess] = useState<boolean>(false)
+  const [registrationError, setRegistrationError] = useState<boolean>(false)
+  const [fileValidation, setFileValidation] = useState<boolean>(false)
 
   const dialogRef = useRef<HTMLDialogElement>(null)
   const openModal = () => dialogRef.current?.showModal()
@@ -34,30 +42,83 @@ const Chat: NextPage<PageProps> = (props) => {
     closeModal()
   }
 
-  const onSubmit = (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault()
-    userData ? sendMessage() : openModal()
-  }
+  const userInfoRegister = () => {
+    if (userImage && userName && userName.length <= MAX_ROOM_NAME_LENGTH) {
+      try {
+        const storage = getStorage()
+        const imageRef = ref(storage, user?.uid)
+        uploadBytes(imageRef, userImage).then(() => {
+          getDownloadURL(imageRef).then((url) => {
+            updateDocFunc({ name: userName, image: url }, "users", user?.uid)
+          })
+        })
+        setDialogDoText("Loading...")
 
-  const userInfoRegister = async () => {
-    if (userName && userName.length <= MAX_ROOM_NAME_LENGTH) {
-      updateDocFunc({ name: userName, image: "tehjs" }, "users", user?.uid)
-      closeModal()
+        // 登録完了を待って発火
+        setTimeout(() => {
+          setRegistrationSuccess(true)
+          closeModal()
+        }, 1000)
+      } catch (e) {
+        console.log(e)
+        setRegistrationError(true)
+      }
     }
   }
 
-  const sendMessage = () => {
-    console.log("sendMessage")
+  const uploadFile = (e: ChangeEvent<HTMLInputElement>) => {
+    const file = e.currentTarget.files?.[0]
+    if (!file) return
+    const allowedFile = ["image/jpeg", "image/jpg", "image/png"]
+    if (file.size > 3000000 || !allowedFile.includes(file.type)) {
+      setFileValidation(true)
+      e.currentTarget.value = ""
+      return
+    }
+    setUserImage(file)
   }
 
-  const { data } = useGetDocById("users", user?.uid)
-  if (data) {
-    setUserData(data as LoginUser)
+  const onSubmit = (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault()
+    if (userData && props.data.id) {
+      updateRoomSubDocFunc(
+        {
+          text: message,
+          name: userData.name,
+          image: userData.image,
+        },
+        props.data.id,
+      )
+    } else {
+      openModal()
+    }
   }
+
+  useEffect(() => {
+    if (!user?.uid) return
+    const fetch = async () => {
+      const data = await getDocById("users", user.uid)
+      setUserData(data as LoginUser)
+    }
+    fetch()
+  }, [registrationSuccess, user?.uid])
 
   return (
     <AuthGuard>
-      <Dialog ref={dialogRef} cancelFunc={cancelAction} doFunc={userInfoRegister}>
+      <Toast
+        text="予期していないエラーが発生しました。お時間を置いて再度ご登録いただくかお問い合わせください。"
+        isShow={registrationError}
+      />
+      <Toast
+        text="ファイルサイズが3MBを越えている、または拡張子が指定外のファイルです。"
+        isShow={fileValidation}
+      />
+      <Dialog
+        ref={dialogRef}
+        cancelFunc={cancelAction}
+        doFunc={userInfoRegister}
+        doButtonText={dialogDoText}
+      >
         <p className={styles.dialog__message}>
           メッセージを送信するには
           <br />
@@ -70,11 +131,28 @@ const Chat: NextPage<PageProps> = (props) => {
           maxLength={10}
           require
         />
+        <p className={styles.dialog__caution}>*3MB以内png,jpeg,jpgのみ</p>
+        <label className={styles.dialog__file}>
+          {userImage?.name || "アイコン画像を選択"}
+          <input type="file" accept="image/png, image/jpeg" onChange={uploadFile} />
+        </label>
       </Dialog>
-      <Layout historyBack pageTitle={props.title}>
+      <Layout historyBack pageTitle={props.data.title} reImageFetch={registrationSuccess}>
         <form className={styles.send} onSubmit={onSubmit}>
-          <input type="text" placeholder="Type a message here" />
-          <button type="submit">Send!</button>
+          <InputText
+            addClassNames={styles.send__input}
+            value={message}
+            placeholder="Type a message here"
+            onChage={setMessage}
+          />
+          <Button
+            type="submit"
+            disabled={!message}
+            text="Send!"
+            isShadow
+            width="10%"
+            addClassNames={styles.send__button}
+          />
         </form>
       </Layout>
     </AuthGuard>
@@ -83,7 +161,9 @@ const Chat: NextPage<PageProps> = (props) => {
 
 export const getServerSideProps: GetServerSideProps<PageProps> = async (context) => {
   const { id } = context.params as PathParams
-  return { props: { title: id } }
+  const tempData = await getDocById("rooms", id)
+  const data = JSON.parse(JSON.stringify({ ...tempData, id }))
+  return { props: { data } }
 }
 
 export default Chat

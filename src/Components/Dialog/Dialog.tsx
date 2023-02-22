@@ -1,10 +1,12 @@
 import { forwardRef, ReactNode } from "react"
 import styles from "./Dialog.module.scss"
+import { Button } from "@/Components/Button/Button"
 
 type DialogProps = {
   children: ReactNode
   cancelFunc: () => void
   doFunc: () => void
+  doButtonText?: string
 }
 
 /**
@@ -17,8 +19,13 @@ const Dialog = forwardRef<HTMLDialogElement, DialogProps>((props, ref) => (
   <dialog ref={ref} className={styles.dialog}>
     {props.children}
     <div className={styles.dialog__action}>
-      <button onClick={props.cancelFunc}>CANCEL</button>
-      <button onClick={props.doFunc}>OK</button>
+      <Button text="CANCEL" onClick={props.cancelFunc} width="10rem" color="white" />
+      <Button
+        text={props.doButtonText || "OK"}
+        onClick={props.doFunc}
+        width="10rem"
+        color="white"
+      />
     </div>
   </dialog>
 ))

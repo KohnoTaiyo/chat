@@ -1,20 +1,16 @@
 import { getFirestore, doc, getDoc } from "firebase/firestore"
-import { useState } from "react"
-import { LoginUser, Room } from "types"
 
-const useGetDocById = (type: "users" | "rooms", id?: string) => {
-  const [data, setData] = useState<LoginUser | Room>()
-  const db = getFirestore()
-
-  const fetch = async () => {
-    if (!id) return
+const getDocById = async (type: "users" | "rooms", id: string) => {
+  try {
+    const db = getFirestore()
     const docRef = doc(db, type, id)
     const docSnap = await getDoc(docRef)
-    setData(docSnap.data())
+    const data = docSnap.data()
+    return data
+  } catch (e) {
+    console.log(e)
+    return undefined
   }
-  fetch()
-
-  return { data } as const
 }
 
-export { useGetDocById }
+export { getDocById }

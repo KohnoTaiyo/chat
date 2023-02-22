@@ -1,3 +1,4 @@
+import classNames from "classnames"
 import { ChangeEvent, FC, useState } from "react"
 import styles from "./InputText.module.scss"
 
@@ -7,10 +8,12 @@ type InputTextProps = {
   placeholder: string
   maxLength?: number
   require?: boolean
+  addClassNames?: string
 }
 
 const InputText: FC<InputTextProps> = (props) => {
   const [errorLength, setErrorRength] = useState<boolean>(false)
+  const inputClass = classNames(styles.input, props.addClassNames)
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     const MAX_ROOM_NAME_LENGTH = props.maxLength
@@ -30,7 +33,7 @@ const InputText: FC<InputTextProps> = (props) => {
         value={props.value}
         onChange={handleChange}
         placeholder={props.placeholder}
-        className={styles.input}
+        className={inputClass}
       />
     </>
   )

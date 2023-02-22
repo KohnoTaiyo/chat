@@ -4,6 +4,7 @@ export type LoginUser = {
 }
 
 export type Room = {
+  id?: string
   title: string
   updatedAt: Date
 }

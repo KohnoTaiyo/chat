@@ -1,0 +1,23 @@
+@import "@variables";
+
+.button {
+  min-width: 8rem;
+  background-color: $primaryColor;
+  font-family: $mainFont;
+  color: #fff;
+  border-radius: 0.4rem;
+  padding: 0.4rem;
+
+  &:disabled {
+    opacity: 0.4;
+  }
+
+  &__white {
+    background-color: #fff;
+    color: $primaryColor;
+  }
+
+  &__shadow {
+    box-shadow: $shadowOut;
+  }
+}

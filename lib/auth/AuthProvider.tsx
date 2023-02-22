@@ -2,18 +2,16 @@ import type { User } from "@firebase/auth"
 import { getAuth, onAuthStateChanged } from "@firebase/auth"
 import { createContext, ReactNode, useContext, useEffect, useState } from "react"
 
-export type GlobalAuthState = {
+type GlobalAuthState = {
   user: User | null | undefined
 }
-type Props = { children: ReactNode }
-
 const initialState: GlobalAuthState = {
   user: undefined,
 }
 
 const AuthContext = createContext<GlobalAuthState>(initialState)
 
-export const AuthProvider = ({ children }: Props) => {
+export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<GlobalAuthState>(initialState)
 
   useEffect(() => {
@@ -22,9 +20,9 @@ export const AuthProvider = ({ children }: Props) => {
       onAuthStateChanged(auth, async (user) => {
         setUser({ user })
       })
-    } catch (error) {
+    } catch (e) {
       setUser(initialState)
-      throw error
+      console.log(e)
     }
   }, [])
 

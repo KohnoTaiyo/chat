@@ -1,5 +1,4 @@
 import { getAuth, signInAnonymously } from "firebase/auth"
-import { doc, getFirestore, setDoc } from "firebase/firestore"
 import type { NextPage } from "next"
 import { useRouter } from "next/router"
 import { useEffect, useState } from "react"
@@ -13,7 +12,6 @@ const Auth: NextPage = () => {
   const [isLoading, setLoading] = useState<boolean>(false)
   const { user } = useAuthContext()
   const { push } = useRouter()
-  const db = getFirestore()
 
   const handleSubmit = async () => {
     try {
@@ -21,14 +19,6 @@ const Auth: NextPage = () => {
       setLoading(true)
       // 匿名ログイン
       await signInAnonymously(auth)
-      // // 初期ユーザーデータ登録
-      // if (user) {
-      //   console.log("bbb")
-      //   await setDoc(doc(db, "users", user.uid), {
-      //     name: "",
-      //     image: "",
-      //   })
-      // }
       push("/")
     } catch (e) {
       console.log(e)
