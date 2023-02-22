@@ -4,6 +4,7 @@ const nextConfig = {
   images: {
     domains: ["firebasestorage.googleapis.com"],
   },
+  optimizeFonts: true,
 }
 
 module.exports = nextConfig
