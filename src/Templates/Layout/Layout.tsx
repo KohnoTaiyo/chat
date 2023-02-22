@@ -18,6 +18,10 @@ const Layout: FC<LayoutProps> = (props) => (
       <title>{props.tabTitle || "チャットWebアプリ"}</title>
       <meta name="description" content={props.description || "課題のチャットWebアプリです"} />
       <link rel="icon" href="/favicon.ico" />
+      <link
+        href="https://fonts.googleapis.com/css2?family=Dela+Gothic+One&display=swap"
+        rel="stylesheet"
+      />
     </Head>
     <Header
       historyBack={props.historyBack}
